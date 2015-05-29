@@ -54,7 +54,7 @@ public class MapillaryCache extends
     protected BufferedImageCacheEntry createCacheEntry(byte[] content) {
         return new BufferedImageCacheEntry(content);
     }
-    
+
     @Override
     protected boolean isObjectLoadable() {
         if (cacheData == null)
@@ -63,7 +63,7 @@ public class MapillaryCache extends
         return content != null && content.length > 0;
     }
 
-    //@Override
+    // @Override
     protected boolean handleNotFound() {
         // TODO Auto-generated method stub
         return false;
