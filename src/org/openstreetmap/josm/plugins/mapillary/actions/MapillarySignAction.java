@@ -20,11 +20,13 @@ import org.openstreetmap.josm.tools.Shortcut;
 public class MapillarySignAction extends JosmAction {
 
     public MapillarySignAction() {
-        super(tr("Switch sign/normal mode"), new ImageProvider("icon24sign.png"),
+        super(tr("Switch sign/normal mode"),
+                new ImageProvider("icon24sign.png"),
                 tr("Switch sign/normal mode"), Shortcut.registerShortcut(
-                        "Mapillary sign", tr("Switch Mapillary plugin's sign mode on/off"),
-                        KeyEvent.VK_M, Shortcut.NONE), false,
-                "mapillarySign", false);
+                        "Mapillary sign",
+                        tr("Switch Mapillary plugin's sign mode on/off"),
+                        KeyEvent.VK_M, Shortcut.NONE), false, "mapillarySign",
+                false);
         this.setEnabled(false);
     }
 

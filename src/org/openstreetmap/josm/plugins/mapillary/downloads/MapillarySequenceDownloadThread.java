@@ -77,7 +77,7 @@ public class MapillarySequenceDownloadThread implements Runnable {
                 MapillarySequence sequence = new MapillarySequence(
                         jsonobj.getString("key"), jsonobj.getJsonNumber(
                                 "captured_at").longValue());
-                                
+
                 int first = -1;
                 int last = -1;
                 int pos = 0;
@@ -87,8 +87,7 @@ public class MapillarySequenceDownloadThread implements Runnable {
                 for (MapillaryAbstractImage img : images) {
                     if (first == -1 && isInside(img))
                         first = pos;
-                    else if (first != -1 && last == -1
-                            && !isInside(img))
+                    else if (first != -1 && last == -1 && !isInside(img))
                         last = pos;
                     else if (last != -1 && isInside(img))
                         last = -1;
@@ -113,7 +112,7 @@ public class MapillarySequenceDownloadThread implements Runnable {
                     + " might be a Mapillary problem.");
         }
     }
-    
+
     private boolean isInside(MapillaryAbstractImage image) {
         for (int i = 0; i < bounds.size(); i++) {
             if (bounds.get(i).contains(image.getLatLon()))

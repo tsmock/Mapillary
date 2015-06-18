@@ -49,7 +49,7 @@ public class MapillaryHistoryDialog extends ToggleDialog implements
 
     public MapillaryHistoryDialog() {
         super(tr("Mapillary history"), "mapillaryhistory.png",
-                tr("Open Mapillary history dialog"),  Shortcut.registerShortcut(
+                tr("Open Mapillary history dialog"), Shortcut.registerShortcut(
                         tr("Mapillary history"),
                         tr("Open Mapillary history dialog"), KeyEvent.VK_M,
                         Shortcut.NONE), 200);

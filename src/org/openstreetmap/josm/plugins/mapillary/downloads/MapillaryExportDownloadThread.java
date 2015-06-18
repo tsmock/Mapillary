@@ -45,8 +45,8 @@ public class MapillaryExportDownloadThread implements Runnable,
 
     @Override
     public void run() {
-        new MapillaryCache(image.getKey(), MapillaryCache.Type.FULL_IMAGE).submit(this,
-                false);
+        new MapillaryCache(image.getKey(), MapillaryCache.Type.FULL_IMAGE)
+                .submit(this, false);
 
     }
 

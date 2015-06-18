@@ -13,10 +13,11 @@ import org.openstreetmap.josm.gui.preferences.TabPreferenceSetting;
 
 public class MapillaryPreferenceSetting implements SubPreferenceSetting {
 
-    private JCheckBox reverseButtons = new JCheckBox(tr("Reverse buttons position when displaying images."));
-    private JCheckBox downloadMode = new JCheckBox(tr("Download images manually"));
+    private JCheckBox reverseButtons = new JCheckBox(
+            tr("Reverse buttons position when displaying images."));
+    private JCheckBox downloadMode = new JCheckBox(
+            tr("Download images manually"));
 
-    
     @Override
     public TabPreferenceSetting getTabPreferenceSetting(PreferenceTabbedPane gui) {
         return gui.getDisplayPreference();
@@ -25,10 +26,12 @@ public class MapillaryPreferenceSetting implements SubPreferenceSetting {
     @Override
     public void addGui(PreferenceTabbedPane gui) {
         JPanel panel = new JPanel();
-        
-        reverseButtons.setSelected(Main.pref.getBoolean("mapillary.reverse-buttons"));
-        downloadMode.setSelected(Main.pref.getBoolean("mapillary.download-manually"));
-        
+
+        reverseButtons.setSelected(Main.pref
+                .getBoolean("mapillary.reverse-buttons"));
+        downloadMode.setSelected(Main.pref
+                .getBoolean("mapillary.download-manually"));
+
         panel.setLayout(new FlowLayout(FlowLayout.LEFT));
         panel.add(reverseButtons);
         panel.add(downloadMode);

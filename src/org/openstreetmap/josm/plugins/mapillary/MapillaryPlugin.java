@@ -80,7 +80,7 @@ public class MapillaryPlugin extends Plugin implements EditLayerChangeListener {
                 .add(Main.main.menu.viewMenu, zoomAction, false, 15);
         DOWNLOAD_VIEW_MENU = MainMenu.add(Main.main.menu.fileMenu,
                 downloadViewAction, false, 14);
-        
+
         EXPORT_MENU.setEnabled(false);
         DOWNLOAD_MENU.setEnabled(false);
         IMPORT_MENU.setEnabled(false);

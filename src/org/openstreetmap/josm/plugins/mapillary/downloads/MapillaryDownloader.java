@@ -48,15 +48,16 @@ public class MapillaryDownloader {
         url2 += buildParameters(hash);
         url3 += buildParameters(hash);
         System.out.println(url2);
-        
+
         try {
             Main.info("MapillaryPlugin GET " + url2);
-            Main.worker.submit(new MapillarySquareDownloadManagerThread(url1, url2, url3));
+            Main.worker.submit(new MapillarySquareDownloadManagerThread(url1,
+                    url2, url3));
         } catch (Exception e) {
             Main.error(e);
         }
     }
-    
+
     public void getImages(Bounds bounds) {
         getImages(bounds.getMin(), bounds.getMax());
     }

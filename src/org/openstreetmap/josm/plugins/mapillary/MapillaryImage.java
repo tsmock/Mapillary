@@ -15,11 +15,14 @@ import java.util.List;
 public class MapillaryImage extends MapillaryAbstractImage {
     /** Unique identifier of the object */
     private final String key;
-    /** Sequence of pictures containing this object*/
+    /** Sequence of pictures containing this object */
     private MapillarySequence sequence;
 
+    /** Epoch time when the image was taken. */
     private long capturedAt;
+    /** The user that made the image */
     private String user;
+    /** Set of traffic signs in the image */
     private List<String> signs;
     private String location;
 
@@ -57,11 +60,16 @@ public class MapillaryImage extends MapillaryAbstractImage {
     public String getKey() {
         return this.key;
     }
-    
+
+    /**
+     * Adds a new sign to the set of signs.
+     * 
+     * @param sign
+     */
     public void addSign(String sign) {
         signs.add(sign);
     }
-    
+
     public List<String> getSigns() {
         return signs;
     }
@@ -129,11 +137,20 @@ public class MapillaryImage extends MapillaryAbstractImage {
             return null;
         return this.getSequence().previous(this);
     }
-    
+
+    /**
+     * Returns the date the picture was taken in DMY format.
+     * @return
+     */
     public String getDate() {
         return getDate("dd/MM/yyyy - hh:mm:ss");
     }
-    
+
+    /**
+     * Returns the date the picture was taken in the given format.
+     * @param format
+     * @return
+     */
     public String getDate(String format) {
         Date date = new Date(getCapturedAt());
 

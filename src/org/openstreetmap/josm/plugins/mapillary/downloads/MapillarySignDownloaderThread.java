@@ -45,7 +45,8 @@ public class MapillarySignDownloaderThread implements Runnable {
                 String key = jsonarr.getJsonObject(i).getString("key");
                 if (rectversions != null) {
                     for (int j = 0; j < rectversions.size(); j++) {
-                        rects = rectversions.getJsonObject(j).getJsonArray("rects");
+                        rects = rectversions.getJsonObject(j).getJsonArray(
+                                "rects");
                         for (int k = 0; k < rects.size(); k++) {
                             JsonObject data = rects.getJsonObject(k);
                             for (MapillaryAbstractImage image : MapillaryData

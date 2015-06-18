@@ -14,7 +14,8 @@ public class MapillaryImportedImage extends MapillaryAbstractImage {
     protected File file;
     public final String datetimeOriginal;
 
-    public MapillaryImportedImage(double lat, double lon, double ca, File file, String datetimeOriginal) {
+    public MapillaryImportedImage(double lat, double lon, double ca, File file,
+            String datetimeOriginal) {
         super(lat, lon, ca);
         this.file = file;
         System.out.println(datetimeOriginal);
@@ -30,7 +31,7 @@ public class MapillaryImportedImage extends MapillaryAbstractImage {
     public BufferedImage getImage() throws IOException {
         return ImageIO.read(file);
     }
-    
+
     public File getFile() {
         return file;
     }

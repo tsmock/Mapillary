@@ -50,7 +50,8 @@ public abstract class MapillaryAbstractImage {
     }
 
     /**
-     * Returns a LatLon object containing the coordintes of the object.
+     * Returns a LatLon object containing the current coordinates of the object.
+     * When you are dragging the image this changes.
      * 
      * @return The LatLon object with the position of the object.
      */
@@ -58,6 +59,11 @@ public abstract class MapillaryAbstractImage {
         return movingLatLon;
     }
 
+    /**
+     * Returns the last fixed coorditanes of the object.
+     * 
+     * @return
+     */
     public LatLon getTempLatLon() {
         return tempLatLon;
     }

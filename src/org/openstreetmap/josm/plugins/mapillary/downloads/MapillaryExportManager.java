@@ -49,13 +49,15 @@ public class MapillaryExportManager extends PleaseWaitRunnable {
         amount = images.size();
         this.path = path;
     }
-    
+
     /**
      * Constructor used to rewrite imported images.
+     * 
      * @param images
      * @throws IOException
      */
-    public MapillaryExportManager(List<MapillaryImportedImage> images) throws IOException {
+    public MapillaryExportManager(List<MapillaryImportedImage> images)
+            throws IOException {
         super(tr("Downloading") + "...", new PleaseWaitProgressMonitor(
                 "Exporting Mapillary Images"), true);
         queue = new ArrayBlockingQueue<>(10);
@@ -64,7 +66,7 @@ public class MapillaryExportManager extends PleaseWaitRunnable {
             queue.add(image.getImage());
             queueImages.add(image);
         }
-        amount = images.size();		
+        amount = images.size();
     }
 
     @Override

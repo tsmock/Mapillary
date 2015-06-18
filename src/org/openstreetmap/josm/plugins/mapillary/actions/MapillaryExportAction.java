@@ -37,7 +37,8 @@ public class MapillaryExportAction extends JosmAction {
         super(tr("Export pictures"), new ImageProvider("icon24.png"),
                 tr("Export pictures"), Shortcut.registerShortcut(
                         "Export Mapillary", tr("Export Mapillary pictures"),
-                        KeyEvent.VK_M, Shortcut.NONE), false, "mapillaryExport", false);
+                        KeyEvent.VK_M, Shortcut.NONE), false,
+                "mapillaryExport", false);
         this.setEnabled(false);
     }
 
@@ -58,26 +59,29 @@ public class MapillaryExportAction extends JosmAction {
                 export(MapillaryData.getInstance().getImages());
             } else if (dialog.group.isSelected(dialog.sequence.getModel())) {
                 ArrayList<MapillaryAbstractImage> images = new ArrayList<>();
-                for (MapillaryAbstractImage image : MapillaryData.getInstance().getMultiSelectedImages())
+                for (MapillaryAbstractImage image : MapillaryData.getInstance()
+                        .getMultiSelectedImages())
                     if (image instanceof MapillaryImage) {
                         if (!images.contains(image))
-                            images.addAll(((MapillaryImage) image).getSequence().getImages());
-                    }
-                    else
+                            images.addAll(((MapillaryImage) image)
+                                    .getSequence().getImages());
+                    } else
                         images.add(image);
                 export(images);
             } else if (dialog.group.isSelected(dialog.selected.getModel())) {
                 export(MapillaryData.getInstance().getMultiSelectedImages());
-            } 
-        // This option ignores the selected directory.
-         } else if (dialog.group.isSelected(dialog.rewrite.getModel())) {
+            }
+            // This option ignores the selected directory.
+        } else if (dialog.group.isSelected(dialog.rewrite.getModel())) {
             ArrayList<MapillaryImportedImage> images = new ArrayList<>();
-            for (MapillaryAbstractImage image : MapillaryData.getInstance().getImages())
+            for (MapillaryAbstractImage image : MapillaryData.getInstance()
+                    .getImages())
                 if (image instanceof MapillaryImportedImage) {
                     images.add(((MapillaryImportedImage) image));
                 }
             try {
-                Main.worker.submit(new Thread(new MapillaryExportManager(images)));
+                Main.worker.submit(new Thread(
+                        new MapillaryExportManager(images)));
             } catch (IOException e1) {
                 Main.error(e1);
             }

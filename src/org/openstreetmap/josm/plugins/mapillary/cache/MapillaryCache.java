@@ -20,7 +20,8 @@ public class MapillaryCache extends
     }
 
     public MapillaryCache(String key, Type type) {
-        super(MapillaryPlugin.CACHE, 50000, 50000, new HashMap<String, String>());
+        super(MapillaryPlugin.CACHE, 50000, 50000,
+                new HashMap<String, String>());
         this.key = key;
         try {
             if (type == Type.FULL_IMAGE) {

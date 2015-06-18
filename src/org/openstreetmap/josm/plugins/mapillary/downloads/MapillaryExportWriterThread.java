@@ -76,7 +76,8 @@ public class MapillaryExportWriterThread implements Runnable {
 
                 // Write EXIF tags
                 TiffOutputSet outputSet = new TiffOutputSet();
-                TiffOutputDirectory exifDirectory = outputSet.getOrCreateExifDirectory();
+                TiffOutputDirectory exifDirectory = outputSet
+                        .getOrCreateExifDirectory();
                 exifDirectory
                         .add(GpsTagConstants.GPS_TAG_GPS_IMG_DIRECTION_REF,
                                 GpsTagConstants.GPS_TAG_GPS_IMG_DIRECTION_REF_VALUE_TRUE_NORTH);
@@ -86,11 +87,11 @@ public class MapillaryExportWriterThread implements Runnable {
                     exifDirectory.add(
                             ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL,
                             ((MapillaryImportedImage) mimg).datetimeOriginal);
-                }
-                else if (mimg instanceof MapillaryImage) 
+                } else if (mimg instanceof MapillaryImage)
                     exifDirectory.add(
                             ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL,
-                            ((MapillaryImage) mimg).getDate("yyyy/MM/dd hh/mm/ss"));
+                            ((MapillaryImage) mimg)
+                                    .getDate("yyyy/MM/dd hh/mm/ss"));
                 outputSet.setGPSInDegrees(mimg.getLatLon().lon(), mimg
                         .getLatLon().lat());
                 OutputStream os = new BufferedOutputStream(

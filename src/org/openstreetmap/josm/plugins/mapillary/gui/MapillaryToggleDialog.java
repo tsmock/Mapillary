@@ -93,7 +93,7 @@ public class MapillaryToggleDialog extends ToggleDialog implements
                 nextSignButton });
 
         mode = NORMAL_MODE;
-        
+
         createLayout(mapillaryImageDisplay, normalMode,
                 Main.pref.getBoolean("mapillary.reverse-buttons"));
         disableAllButtons();
@@ -122,7 +122,7 @@ public class MapillaryToggleDialog extends ToggleDialog implements
             list = normalMode;
             mode = NORMAL_MODE;
         }
-        
+
         createLayout(mapillaryImageDisplay, list,
                 Main.pref.getBoolean("mapillary.reverse-buttons"));
         disableAllButtons();

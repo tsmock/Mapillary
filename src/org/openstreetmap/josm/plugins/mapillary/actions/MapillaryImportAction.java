@@ -180,12 +180,12 @@ public class MapillaryImportAction extends JosmAction {
         return deg.doubleValue() + min.doubleValue() / 60 + sec.doubleValue()
                 / 3600;
     }
-    
-    private String currentDate() {
-           Calendar cal = Calendar.getInstance();
 
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
-            return formatter.format(cal);
-    
+    private String currentDate() {
+        Calendar cal = Calendar.getInstance();
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+        return formatter.format(cal);
+
     }
 }

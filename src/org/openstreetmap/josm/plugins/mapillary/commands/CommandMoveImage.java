@@ -18,7 +18,8 @@ public class CommandMoveImage extends MapillaryCommand {
     private double x;
     private double y;
 
-    public CommandMoveImage(List<MapillaryAbstractImage> images, double x, double y) {
+    public CommandMoveImage(List<MapillaryAbstractImage> images, double x,
+            double y) {
         this.images = new ArrayList<>(images);
         this.x = x;
         this.y = y;
@@ -43,11 +44,12 @@ public class CommandMoveImage extends MapillaryCommand {
         checkModified();
         Main.map.repaint();
     }
-    
+
     public String toString() {
-        return trn("Moved {0} node", "Moved {0} nodes", images.size(), images.size());
+        return trn("Moved {0} node", "Moved {0} nodes", images.size(),
+                images.size());
     }
-    
+
     @Override
     public void sum(MapillaryCommand command) {
         if (command instanceof CommandMoveImage) {

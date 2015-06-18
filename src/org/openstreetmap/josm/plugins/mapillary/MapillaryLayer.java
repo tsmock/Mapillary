@@ -149,6 +149,12 @@ public class MapillaryLayer extends AbstractModifiableLayer implements
         }
     }
 
+    /**
+     * Checks if the area of the OSM data is too big. This means that probably
+     * lots of Mapillary images are going to be downloaded, slowing down the
+     * program too much. To solve this the automatic is stopped, an alert is
+     * shown and you will have to download areas manually.
+     */
     private void checkBigAreas() {
         double area = 0;
         for (Bounds bounds : Main.map.mapView.getEditLayer().data

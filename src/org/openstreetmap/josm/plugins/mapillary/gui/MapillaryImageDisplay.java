@@ -32,9 +32,12 @@ import org.openstreetmap.josm.Main;
  */
 public class MapillaryImageDisplay extends JComponent {
 
-    private static final int DRAG_BUTTON = Main.pref.getInteger("mapillary.picture-drag-button", 3);
-    private static final int OPTION_BUTTON = Main.pref.getInteger("mapillary.picture-option-button", 2);
-    private static final int ZOOM_BUTTON = Main.pref.getInteger("mapillary.picture-zoom-button", 1);
+    private static final int DRAG_BUTTON = Main.pref.getInteger(
+            "mapillary.picture-drag-button", 3);
+    private static final int OPTION_BUTTON = Main.pref.getInteger(
+            "mapillary.picture-option-button", 2);
+    private static final int ZOOM_BUTTON = Main.pref.getInteger(
+            "mapillary.picture-zoom-button", 1);
 
     /** The image currently displayed */
     private transient BufferedImage image = null;
