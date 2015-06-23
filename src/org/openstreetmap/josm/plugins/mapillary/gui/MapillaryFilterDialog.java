@@ -47,17 +47,20 @@ public class MapillaryFilterDialog extends ToggleDialog implements
     private final static int ROWS = 0;
     private final static int COLUMNS = 3;
 
-    private final JPanel panel;
+    private final JPanel panel = new JPanel(new GridLayout(ROWS, COLUMNS));
 
-    private final JCheckBox imported;
-    private final JCheckBox downloaded;
-    private final JCheckBox onlySigns;
+    private final JCheckBox imported = new JCheckBox("Imported images");
+    private final JCheckBox downloaded = new JCheckBox(new downloadCheckBoxAction());
+    private final JCheckBox onlySigns = new JCheckBox(new OnlySignsAction());
     private final JComboBox<String> time;
     private final JTextField user;
 
-    private final SideButton updateButton;
-    private final SideButton resetButton;
-    private final JButton signChooser;
+    private final SideButton updateButton = new SideButton(new UpdateAction());
+    private final SideButton resetButton = new SideButton(new ResetAction());
+    private final JButton signChooser = new JButton(new SignChooserAction());
+
+    public final MapillaryFilterChooseSigns signFilter = MapillaryFilterChooseSigns
+            .getInstance();
 
     public MapillaryFilterDialog() {
         super(tr("Mapillary filter"), "mapillaryfilter.png",
@@ -65,13 +68,9 @@ public class MapillaryFilterDialog extends ToggleDialog implements
                         tr("Mapillary filter"),
                         tr("Open Mapillary filter dialog"), KeyEvent.VK_M,
                         Shortcut.NONE), 200);
-        panel = new JPanel(new GridLayout(ROWS, COLUMNS));
 
-        imported = new JCheckBox("Imported images");
-        downloaded = new JCheckBox(new downloadCheckBoxAction());
-        onlySigns = new JCheckBox(new OnlySignsAction());
-
-        signChooser = new JButton(new SignChooserAction());
+ 
+        signChooser.setEnabled(false);
         JPanel signChooserPanel = new JPanel();
         signChooserPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         signChooserPanel.add(signChooser);
@@ -91,9 +90,6 @@ public class MapillaryFilterDialog extends ToggleDialog implements
 
         imported.setSelected(true);
         downloaded.setSelected(true);
-
-        updateButton = new SideButton(new UpdateAction());
-        resetButton = new SideButton(new ResetAction());
 
         panel.add(downloaded);
         panel.add(imported);
@@ -154,6 +150,10 @@ public class MapillaryFilterDialog extends ToggleDialog implements
                         img.setVisible(false);
                         continue;
                     }
+                    if (!checkSigns((MapillaryImage) img)) {
+                        img.setVisible(false);
+                        continue;
+                    }
                 }
                 if (!user.getText().equals("")
                         && !user.getText().equals(
@@ -184,6 +184,37 @@ public class MapillaryFilterDialog extends ToggleDialog implements
             }
         }
         MapillaryData.getInstance().dataUpdated();
+    }
+
+    private boolean checkSigns(MapillaryImage img) {
+        // TODO move strings into an arraylist
+        if (checkSign(img, signFilter.maxspeed, "prohibitory_speed_limit"))
+            return true;
+        
+        if (checkSign(img, signFilter.stop, "priority_stop"))
+            return true;
+        
+        if (checkSign(img, signFilter.giveWay, "other_give_way"))
+            return true;
+        
+        if (checkSign(img, signFilter.roundabout, "mandatory_roundabout"))
+            return true;
+        
+        if (checkSign(img, signFilter.access, "other_no_entry"))
+            return true;
+
+        return false;
+    }
+    
+    private boolean checkSign(MapillaryImage img, JCheckBox signCheckBox, String singString) {
+        boolean contains = false;
+        for (String sign : img.getSigns()) {
+            if (sign.contains(singString))
+                contains = true;
+        }
+        if (contains == signCheckBox.isSelected() && contains)
+            return true;
+        return false;
     }
 
     private long currentTime() {
@@ -255,7 +286,8 @@ public class MapillaryFilterDialog extends ToggleDialog implements
             JDialog dlg = pane.createDialog(Main.parent, tr("Choose signs"));
             dlg.setMinimumSize(new Dimension(400, 150));
             dlg.setVisible(true);
-            MapillaryFilterDialog.getInstance().refresh();
+            if ((int) pane.getValue() == JOptionPane.OK_OPTION)
+                MapillaryFilterDialog.getInstance().refresh();
             dlg.dispose();
         }
     }
