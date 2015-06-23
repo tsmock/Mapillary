@@ -51,14 +51,12 @@ public class MapillaryPlugin extends Plugin implements EditLayerChangeListener {
     private final MapillaryDownloadAction downloadAction;
     private final MapillaryExportAction exportAction;
     private final MapillaryImportAction importAction;
-    private final MapillarySignAction signAction;
     private final MapillaryZoomAction zoomAction;
     private final MapillaryDownloadViewAction downloadViewAction;
 
     public static JMenuItem DOWNLOAD_MENU;
     public static JMenuItem EXPORT_MENU;
     public static JMenuItem IMPORT_MENU;
-    public static JMenuItem SIGN_MENU;
     public static JMenuItem ZOOM_MENU;
     public static JMenuItem DOWNLOAD_VIEW_MENU;
 
@@ -67,7 +65,6 @@ public class MapillaryPlugin extends Plugin implements EditLayerChangeListener {
         downloadAction = new MapillaryDownloadAction();
         exportAction = new MapillaryExportAction();
         importAction = new MapillaryImportAction();
-        signAction = new MapillarySignAction();
         zoomAction = new MapillaryZoomAction();
         downloadViewAction = new MapillaryDownloadViewAction();
 
@@ -77,7 +74,6 @@ public class MapillaryPlugin extends Plugin implements EditLayerChangeListener {
                 false, 14);
         IMPORT_MENU = MainMenu.add(Main.main.menu.fileMenu, importAction,
                 false, 14);
-        SIGN_MENU = MainMenu.add(Main.main.menu.dataMenu, signAction, false);
         ZOOM_MENU = MainMenu
                 .add(Main.main.menu.viewMenu, zoomAction, false, 15);
         DOWNLOAD_VIEW_MENU = MainMenu.add(Main.main.menu.fileMenu,
@@ -86,7 +82,6 @@ public class MapillaryPlugin extends Plugin implements EditLayerChangeListener {
         EXPORT_MENU.setEnabled(false);
         DOWNLOAD_MENU.setEnabled(false);
         IMPORT_MENU.setEnabled(false);
-        SIGN_MENU.setEnabled(false);
         ZOOM_MENU.setEnabled(false);
         DOWNLOAD_VIEW_MENU.setEnabled(false);
 
@@ -106,7 +101,8 @@ public class MapillaryPlugin extends Plugin implements EditLayerChangeListener {
     public void mapFrameInitialized(MapFrame oldFrame, MapFrame newFrame) {
         if (oldFrame == null && newFrame != null) { // map frame added
             Main.map.addToggleDialog(MapillaryToggleDialog.getInstance(), false);
-            Main.map.addToggleDialog(MapillaryHistoryDialog.getInstance(), false);
+            Main.map.addToggleDialog(MapillaryHistoryDialog.getInstance(),
+                    false);
             Main.map.addToggleDialog(MapillaryFilterDialog.getInstance(), false);
         }
         if (oldFrame != null && newFrame == null) { // map frame destroyed
@@ -118,6 +114,7 @@ public class MapillaryPlugin extends Plugin implements EditLayerChangeListener {
 
     public static void setMenuEnabled(JMenuItem menu, boolean value) {
         menu.setEnabled(value);
+        menu.getAction().setEnabled(value);
     }
 
     @Override
@@ -129,7 +126,8 @@ public class MapillaryPlugin extends Plugin implements EditLayerChangeListener {
     public void editLayerChanged(OsmDataLayer oldLayer, OsmDataLayer newLayer) {
         if (oldLayer == null && newLayer != null) {
             setMenuEnabled(DOWNLOAD_MENU, true);
-            setMenuEnabled(IMPORT_MENU, true);
+            if (Main.pref.getBoolean("mapillary.download-manually"))
+                setMenuEnabled(IMPORT_MENU, true);
             setMenuEnabled(DOWNLOAD_VIEW_MENU, true);
         } else if (oldLayer != null && newLayer == null) {
             setMenuEnabled(DOWNLOAD_MENU, false);

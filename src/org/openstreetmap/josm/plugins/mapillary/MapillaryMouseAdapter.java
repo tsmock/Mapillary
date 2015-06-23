@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.actions.mapmode.MapMode;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
@@ -29,6 +30,7 @@ public class MapillaryMouseAdapter extends MouseAdapter {
     private MapillaryRecord record;
 
     private boolean nothingHighlighted;
+    private boolean imageHighlighted = false;
 
     public MapillaryMouseAdapter() {
         mapillaryData = MapillaryData.getInstance();
@@ -42,7 +44,8 @@ public class MapillaryMouseAdapter extends MouseAdapter {
             return;
         MapillaryAbstractImage closestTemp = getClosest(e.getPoint());
         if (Main.map.mapView.getActiveLayer() instanceof OsmDataLayer
-                && closestTemp != null) {
+                && closestTemp != null
+                && Main.map.mapMode == Main.map.mapModeSelect) {
             this.lastClicked = this.closest;
             MapillaryData.getInstance().setSelectedImage(closestTemp);
             return;
@@ -197,23 +200,34 @@ public class MapillaryMouseAdapter extends MouseAdapter {
     @Override
     public void mouseMoved(MouseEvent e) {
         MapillaryAbstractImage closestTemp = getClosest(e.getPoint());
-
+        if (Main.map.mapView.getActiveLayer() instanceof OsmDataLayer
+                && Main.map.mapMode != Main.map.mapModeSelect)
+            return;
         if (closestTemp != null
                 && Main.map.mapView.getActiveLayer() instanceof OsmDataLayer
-                && Main.map.mapModeSelect.getValue("active") == Boolean.TRUE) {
-            Main.map.mapModeSelect.exitMode();
+                && !imageHighlighted) {
+            Main.map.mapMode.putValue("active", Boolean.FALSE);
+            imageHighlighted = true;
+            System.out.println("1");
+
         } else if (closestTemp == null
                 && Main.map.mapView.getActiveLayer() instanceof OsmDataLayer
-                && Main.map.mapModeSelect.getValue("active") == Boolean.FALSE) {
-            Main.map.mapModeSelect.enterMode();
+                && imageHighlighted && nothingHighlighted) {
             nothingHighlighted = false;
-        } else if (Main.map.mapModeSelect.getValue("active") == Boolean.FALSE
-                && !nothingHighlighted && Main.map.mapView != null
-                && Main.map.mapView.getEditLayer().data != null) {
+            Main.map.mapMode.putValue("active", Boolean.TRUE);
+            System.out.println("2");
+
+        } else if (imageHighlighted && !nothingHighlighted
+                && Main.map.mapView != null
+                && Main.map.mapView.getEditLayer().data != null
+                && Main.map.mapView.getActiveLayer() instanceof OsmDataLayer) {
+            System.out.println("3");
+
             for (OsmPrimitive primivitive : Main.map.mapView.getEditLayer().data
                     .allPrimitives()) {
                 primivitive.setHighlighted(false);
             }
+            imageHighlighted = false;
             nothingHighlighted = true;
         }
 

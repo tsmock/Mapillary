@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.mapillary;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
+import static org.openstreetmap.josm.tools.I18n.marktr;
 
 import org.apache.commons.jcs.access.CacheAccess;
 import org.openstreetmap.josm.plugins.mapillary.actions.MapillaryDownloadViewAction;
@@ -33,12 +34,17 @@ import org.openstreetmap.josm.data.osm.event.AbstractDatasetChangedEvent;
 import org.openstreetmap.josm.data.osm.event.DataChangedEvent;
 import org.openstreetmap.josm.data.osm.event.DataSetListener;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.TexturePaint;
 import java.awt.event.MouseAdapter;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -64,8 +70,7 @@ public class MapillaryLayer extends AbstractModifiableLayer implements
 
     private final MapillaryData data = MapillaryData.getInstance();
 
-    public List<Bounds> bounds;
-
+    public ArrayList<Bounds> bounds;
 
     private MouseAdapter mouseAdapter;
 
@@ -73,6 +78,8 @@ public class MapillaryLayer extends AbstractModifiableLayer implements
             "mappaint.highlight.radius", 7);
     private int highlightStep = Main.pref.getInteger("mappaint.highlight.step",
             4);
+
+    private volatile TexturePaint hatched;
 
     public MapillaryLayer() {
         super(tr("Mapillary Images"));
@@ -100,8 +107,8 @@ public class MapillaryLayer extends AbstractModifiableLayer implements
             Main.map.mapView.getEditLayer().data.addDataSetListener(this);
         }
         MapillaryPlugin.setMenuEnabled(MapillaryPlugin.EXPORT_MENU, true);
-        MapillaryPlugin.setMenuEnabled(MapillaryPlugin.SIGN_MENU, true);
         Main.map.mapView.setActiveLayer(this);
+        createHatchTexture();
         Main.map.repaint();
     }
 
@@ -175,7 +182,6 @@ public class MapillaryLayer extends AbstractModifiableLayer implements
         MapillaryLayer.INSTANCE = null;
         MapillaryData.INSTANCE = null;
         MapillaryPlugin.setMenuEnabled(MapillaryPlugin.EXPORT_MENU, false);
-        MapillaryPlugin.setMenuEnabled(MapillaryPlugin.SIGN_MENU, false);
         MapillaryPlugin.setMenuEnabled(MapillaryPlugin.ZOOM_MENU, false);
         Main.map.mapView.removeMouseListener(mouseAdapter);
         Main.map.mapView.removeMouseMotionListener(mouseAdapter);
@@ -195,7 +201,7 @@ public class MapillaryLayer extends AbstractModifiableLayer implements
                 return true;
         return false;
     }
-    
+
     @Override
     public void setVisible(boolean visible) {
         super.setVisible(visible);
@@ -205,17 +211,75 @@ public class MapillaryLayer extends AbstractModifiableLayer implements
     }
 
     /**
+     * Replies background color for downloaded areas.
+     * 
+     * @return background color for downloaded areas. Black by default
+     */
+    private Color getBackgroundColor() {
+        return Main.pref.getColor(marktr("background"), Color.BLACK);
+    }
+
+    /**
+     * Replies background color for non-downloaded areas.
+     * 
+     * @return background color for non-downloaded areas. Yellow by default
+     */
+    private Color getOutsideColor() {
+        return Main.pref.getColor(marktr("outside downloaded area"),
+                Color.YELLOW);
+    }
+
+    /**
+     * Initialize the hatch pattern used to paint the non-downloaded area
+     */
+    private void createHatchTexture() {
+        BufferedImage bi = new BufferedImage(15, 15,
+                BufferedImage.TYPE_INT_ARGB);
+        Graphics2D big = bi.createGraphics();
+        big.setColor(getBackgroundColor());
+        Composite comp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+                0.3f);
+        big.setComposite(comp);
+        big.fillRect(0, 0, 15, 15);
+        big.setColor(getOutsideColor());
+        big.drawLine(0, 15, 15, 0);
+        Rectangle r = new Rectangle(0, 0, 15, 15);
+        hatched = new TexturePaint(bi, r);
+    }
+
+    /**
      * Paints the database in the map.
      */
     @Override
     public void paint(Graphics2D g, MapView mv, Bounds box) {
         synchronized (this) {
+            if (Main.map.mapView.getActiveLayer() == this) {
+                Rectangle b = mv.getBounds();
+                // on some platforms viewport bounds seem to be offset from the
+                // left,
+                // over-grow it just to be sure
+                b.grow(100, 100);
+                Area a = new Area(b);
+                // now successively subtract downloaded areas
+                for (Bounds bounds : this.bounds) {
+                    Point p1 = mv.getPoint(bounds.getMin());
+                    Point p2 = mv.getPoint(bounds.getMax());
+                    Rectangle r = new Rectangle(Math.min(p1.x, p2.x), Math.min(
+                            p1.y, p2.y), Math.abs(p2.x - p1.x), Math.abs(p2.y
+                            - p1.y));
+                    a.subtract(new Area(r));
+                }
+                // paint remainder
+                g.setPaint(hatched);
+                g.fill(a);
+            }
+
             // Draw colored lines
             MapillaryLayer.BLUE = null;
             MapillaryLayer.RED = null;
             MapillaryToggleDialog.getInstance().blueButton.setEnabled(false);
             MapillaryToggleDialog.getInstance().redButton.setEnabled(false);
-            
+
             // Sets blue and red lines and enables/disables the buttons
             if (data.getSelectedImage() != null) {
                 MapillaryImage[] closestImages = getClosestImagesFromDifferentSequences();
@@ -249,8 +313,8 @@ public class MapillaryLayer extends AbstractModifiableLayer implements
                     MapillaryImage image = (MapillaryImage) imageAbs;
                     Point nextp;
                     // Draw sequence line
-                    if (image.getSequence() != null
-                            && image.next() != null && image.next().isVisible()) {
+                    if (image.getSequence() != null && image.next() != null
+                            && image.next().isVisible()) {
                         nextp = mv.getPoint(image.getSequence().next(image)
                                 .getLatLon());
                         g.drawLine(p.x, p.y, nextp.x, nextp.y);
@@ -368,8 +432,7 @@ public class MapillaryLayer extends AbstractModifiableLayer implements
     private MapillaryImage[] getClosestImagesFromDifferentSequences() {
         if (!(data.getSelectedImage() instanceof MapillaryImage))
             return new MapillaryImage[2];
-        MapillaryImage selected = (MapillaryImage) data
-                .getSelectedImage();
+        MapillaryImage selected = (MapillaryImage) data.getSelectedImage();
         MapillaryImage[] ret = new MapillaryImage[2];
         double[] distances = { SEQUENCE_MAX_JUMP_DISTANCE,
                 SEQUENCE_MAX_JUMP_DISTANCE };
