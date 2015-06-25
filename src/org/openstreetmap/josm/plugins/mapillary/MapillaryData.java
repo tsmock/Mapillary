@@ -20,6 +20,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class MapillaryData implements ICachedLoaderListener {
     public volatile static MapillaryData INSTANCE;
+    public static boolean TEST_MODE = false;
 
     private final List<MapillaryAbstractImage> images;
     private MapillaryAbstractImage selectedImage;
@@ -125,7 +126,8 @@ public class MapillaryData implements ICachedLoaderListener {
      * Repaints mapView object.
      */
     public synchronized void dataUpdated() {
-        Main.map.mapView.repaint();
+        if (!TEST_MODE)
+            Main.map.mapView.repaint();
     }
 
     /**
@@ -164,7 +166,8 @@ public class MapillaryData implements ICachedLoaderListener {
                 return;
             if (((MapillaryImage) getSelectedImage()).getSequence() == null)
                 return;
-            if (selectedImage instanceof MapillaryImage && ((MapillaryImage) selectedImage).getSequence() != null) {
+            if (selectedImage instanceof MapillaryImage
+                    && ((MapillaryImage) selectedImage).getSequence() != null) {
                 MapillaryImage tempImage = (MapillaryImage) selectedImage;
                 while (tempImage.next() != null) {
                     tempImage = tempImage.next();
@@ -179,7 +182,8 @@ public class MapillaryData implements ICachedLoaderListener {
 
     /**
      * If the selected MapillaryImage is part of a MapillarySequence then the
-     * previous visible MapillaryImage is selected. In case there is none, does nothing.
+     * previous visible MapillaryImage is selected. In case there is none, does
+     * nothing.
      */
     public void selectPrevious() {
         if (getSelectedImage() instanceof MapillaryImage) {
@@ -187,7 +191,8 @@ public class MapillaryData implements ICachedLoaderListener {
                 return;
             if (((MapillaryImage) getSelectedImage()).getSequence() == null)
                 throw new IllegalStateException();
-            if (selectedImage instanceof MapillaryImage && ((MapillaryImage) selectedImage).getSequence() != null) {
+            if (selectedImage instanceof MapillaryImage
+                    && ((MapillaryImage) selectedImage).getSequence() != null) {
                 MapillaryImage tempImage = (MapillaryImage) selectedImage;
                 while (tempImage.previous() != null) {
                     tempImage = tempImage.previous();

@@ -6,8 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -144,7 +142,7 @@ public class MapillaryImportAction extends JosmAction {
             else
                 MapillaryData.getInstance().add(
                         new MapillaryImportedImage(latValue, lonValue, caValue,
-                                file, currentDate()));
+                                file));
         }
     }
 
@@ -165,7 +163,7 @@ public class MapillaryImportAction extends JosmAction {
                 Main.map.mapView.getCenter());
         MapillaryData.getInstance().add(
                 new MapillaryImportedImage(pos.lat(), pos.lon() + horDev, 0,
-                        file, currentDate()));
+                        file));
         noTagsPics++;
     }
 
@@ -179,13 +177,5 @@ public class MapillaryImportAction extends JosmAction {
         RationalNumber sec = degMinSec[2];
         return deg.doubleValue() + min.doubleValue() / 60 + sec.doubleValue()
                 / 3600;
-    }
-
-    private String currentDate() {
-        Calendar cal = Calendar.getInstance();
-
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
-        return formatter.format(cal);
-
     }
 }
