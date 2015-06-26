@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Event;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.io.ByteArrayInputStream;
@@ -31,6 +32,8 @@ import org.openstreetmap.josm.plugins.mapillary.cache.MapillaryCache;
 import org.openstreetmap.josm.tools.Shortcut;
 
 import javax.imageio.ImageIO;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.AbstractAction;
 import javax.swing.JPanel;
@@ -69,7 +72,7 @@ public class MapillaryToggleDialog extends ToggleDialog implements
                         tr("Open Mapillary main dialog"), KeyEvent.VK_M,
                         Shortcut.NONE), 200);
         MapillaryData.getInstance().addListener(this);
-
+        addShortcuts();
         mapillaryImageDisplay = new MapillaryImageDisplay();
 
         blueButton.setForeground(Color.BLUE);
@@ -81,6 +84,25 @@ public class MapillaryToggleDialog extends ToggleDialog implements
                         nextButton, redButton }),
                 Main.pref.getBoolean("mapillary.reverse-buttons"));
         disableAllButtons();
+
+    }
+    
+    /**
+     * Adds the shortcuts to the buttons.
+     */
+    private void addShortcuts() {
+        nextButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+                KeyStroke.getKeyStroke("PAGE_DOWN"), "next");
+        nextButton.getActionMap().put("next", new nextPictureAction());
+        previousButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+                KeyStroke.getKeyStroke("PAGE_UP"), "previous");
+        previousButton.getActionMap().put("previous", new previousPictureAction());
+        blueButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+                KeyStroke.getKeyStroke("control PAGE_UP"), "blue");
+        blueButton.getActionMap().put("blue", new blueAction());
+        redButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+                KeyStroke.getKeyStroke("control PAGE_DOWN"), "red");
+        redButton.getActionMap().put("red", new redAction());
     }
 
     public static MapillaryToggleDialog getInstance() {
@@ -310,6 +332,8 @@ public class MapillaryToggleDialog extends ToggleDialog implements
             try {
                 BufferedImage img = ImageIO.read(new ByteArrayInputStream(data
                         .getContent()));
+                if (img == null)
+                    return;
                 if (this.mapillaryImageDisplay.getImage() == null)
                     mapillaryImageDisplay.setImage(img);
                 else if (img.getHeight() > this.mapillaryImageDisplay

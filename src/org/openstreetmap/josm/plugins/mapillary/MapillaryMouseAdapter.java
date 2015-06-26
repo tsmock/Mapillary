@@ -124,7 +124,8 @@ public class MapillaryMouseAdapter extends MouseAdapter {
             imagePoint.setLocation(imagePoint.getX(), imagePoint.getY());
             double dist = clickPoint.distanceSq(imagePoint);
             if (minDistance > dist
-                    && clickPoint.distance(imagePoint) < snapDistance && image.isVisible()) {
+                    && clickPoint.distance(imagePoint) < snapDistance
+                    && image.isVisible()) {
                 minDistance = dist;
                 closest = image;
             }

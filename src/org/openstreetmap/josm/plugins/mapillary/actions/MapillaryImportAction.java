@@ -47,7 +47,7 @@ public class MapillaryImportAction extends JosmAction {
                 tr("Import local pictures"), Shortcut.registerShortcut(
                         "Import Mapillary",
                         tr("Import pictures into Mapillary layer"),
-                        KeyEvent.VK_M, Shortcut.NONE), false,
+                        KeyEvent.CHAR_UNDEFINED, Shortcut.NONE), false,
                 "mapillaryImport", false);
         this.setEnabled(false);
     }
@@ -89,7 +89,6 @@ public class MapillaryImportAction extends JosmAction {
                 }
             }
         }
-        MapillaryLayer.getInstance();
     }
 
     /**
