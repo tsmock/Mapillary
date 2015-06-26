@@ -33,12 +33,10 @@ public class MapillaryFilterChooseSigns extends JPanel implements
         intersection.setSelected(true);
         direction.setSelected(true);
 
-        
         // Max speed sign
         JPanel maxspeedPanel = new JPanel();
         JLabel maxspeedLabel = new JLabel(tr("Speed limit"));
-        maxspeedLabel.setIcon(new ImageProvider(
-                "signs/speed.png").get());
+        maxspeedLabel.setIcon(new ImageProvider("signs/speed.png").get());
         maxspeedPanel.add(maxspeedLabel);
         maxspeedPanel.add(maxspeed);
         this.add(maxspeedPanel);
@@ -46,8 +44,7 @@ public class MapillaryFilterChooseSigns extends JPanel implements
         // Stop sign
         JPanel stopPanel = new JPanel();
         JLabel stopLabel = new JLabel(tr("Stop"));
-        stopLabel.setIcon(new ImageProvider(
-                "signs/stop.png").get());
+        stopLabel.setIcon(new ImageProvider("signs/stop.png").get());
         stopPanel.add(stopLabel);
         stopPanel.add(stop);
         this.add(stopPanel);
@@ -55,8 +52,7 @@ public class MapillaryFilterChooseSigns extends JPanel implements
         // Give way sign
         JPanel giveWayPanel = new JPanel();
         JLabel giveWayLabel = new JLabel(tr("Give way"));
-        giveWayLabel.setIcon(new ImageProvider(
-                "signs/right_of_way.png").get());
+        giveWayLabel.setIcon(new ImageProvider("signs/right_of_way.png").get());
         giveWayPanel.add(giveWayLabel);
         giveWayPanel.add(giveWay);
         this.add(giveWayPanel);
@@ -64,23 +60,20 @@ public class MapillaryFilterChooseSigns extends JPanel implements
         // Roundabout sign
         JPanel roundaboutPanel = new JPanel();
         JLabel roundaboutLabel = new JLabel(tr("Give way"));
-        roundaboutLabel.setIcon(new ImageProvider(
-                "signs/roundabout_right.png")
+        roundaboutLabel.setIcon(new ImageProvider("signs/roundabout_right.png")
                 .get());
         roundaboutPanel.add(roundaboutLabel);
         roundaboutPanel.add(roundabout);
         this.add(roundaboutPanel);
 
         // No entry sign
-        // TODO need icon
         JPanel noEntryPanel = new JPanel();
         JLabel noEntryLabel = new JLabel(tr("No entry"));
-        noEntryLabel.setIcon(new ImageProvider(
-                "signs/no_entry.png").get());
+        noEntryLabel.setIcon(new ImageProvider("signs/no_entry.png").get());
         noEntryPanel.add(noEntryLabel);
         noEntryPanel.add(access);
         this.add(noEntryPanel);
-        
+
         // Danger intersection
         JPanel intersectionPanel = new JPanel();
         JLabel intersectionLabel = new JLabel(tr("Intersection danger"));
@@ -89,12 +82,12 @@ public class MapillaryFilterChooseSigns extends JPanel implements
         intersectionPanel.add(intersectionLabel);
         intersectionPanel.add(intersection);
         this.add(intersectionPanel);
-        
+
         // Mandatory direction
         JPanel directionPanel = new JPanel();
         JLabel directionLabel = new JLabel(tr("Mandatory direction (any)"));
-        directionLabel.setIcon(new ImageProvider(
-                "signs/only_straight_on.png").get());
+        directionLabel.setIcon(new ImageProvider("signs/only_straight_on.png")
+                .get());
         directionPanel.add(directionLabel);
         directionPanel.add(direction);
         this.add(directionPanel);
