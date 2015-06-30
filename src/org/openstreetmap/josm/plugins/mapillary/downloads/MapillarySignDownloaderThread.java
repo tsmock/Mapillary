@@ -13,17 +13,20 @@ import javax.json.JsonObject;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.mapillary.MapillaryAbstractImage;
-import org.openstreetmap.josm.plugins.mapillary.MapillaryData;
 import org.openstreetmap.josm.plugins.mapillary.MapillaryImage;
+import org.openstreetmap.josm.plugins.mapillary.MapillaryLayer;
 
 public class MapillarySignDownloaderThread implements Runnable {
 
     private final String url;
     private final ExecutorService ex;
+    private final MapillaryLayer layer;
 
-    public MapillarySignDownloaderThread(ExecutorService ex, String url) {
+    public MapillarySignDownloaderThread(ExecutorService ex, String url,
+            MapillaryLayer layer) {
         this.ex = ex;
         this.url = url;
+        this.layer = layer;
     }
 
     @Override
@@ -49,8 +52,8 @@ public class MapillarySignDownloaderThread implements Runnable {
                                 "rects");
                         for (int k = 0; k < rects.size(); k++) {
                             JsonObject data = rects.getJsonObject(k);
-                            for (MapillaryAbstractImage image : MapillaryData
-                                    .getInstance().getImages())
+                            for (MapillaryAbstractImage image : layer.data
+                                    .getImages())
                                 if (image instanceof MapillaryImage
                                         && ((MapillaryImage) image).getKey()
                                                 .equals(key))
@@ -64,8 +67,7 @@ public class MapillarySignDownloaderThread implements Runnable {
                 else if (rects != null) {
                     for (int j = 0; j < rects.size(); j++) {
                         JsonObject data = rects.getJsonObject(j);
-                        for (MapillaryAbstractImage image : MapillaryData
-                                .getInstance().getImages())
+                        for (MapillaryAbstractImage image : layer.data.getImages())
                             if (image instanceof MapillaryImage
                                     && ((MapillaryImage) image).getKey()
                                             .equals(key))

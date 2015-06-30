@@ -16,7 +16,6 @@ import java.util.concurrent.ExecutorService;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.plugins.mapillary.MapillaryAbstractImage;
-import org.openstreetmap.josm.plugins.mapillary.MapillaryData;
 import org.openstreetmap.josm.plugins.mapillary.MapillaryImage;
 import org.openstreetmap.josm.plugins.mapillary.MapillaryLayer;
 import org.openstreetmap.josm.plugins.mapillary.MapillarySequence;
@@ -31,14 +30,19 @@ import org.openstreetmap.josm.plugins.mapillary.MapillarySequence;
  */
 public class MapillarySequenceDownloadThread implements Runnable {
 
-    private String url;
-    private ExecutorService ex;
-    private List<Bounds> bounds;
+    private final String url;
+    private final ExecutorService ex;
+    private final List<Bounds> bounds;
+    private final MapillaryLayer layer;
+    private final MapillarySquareDownloadManagerThread manager;
 
-    public MapillarySequenceDownloadThread(ExecutorService ex, String url) {
+    public MapillarySequenceDownloadThread(ExecutorService ex, String url,
+            MapillaryLayer layer, MapillarySquareDownloadManagerThread manager) {
         this.url = url;
         this.ex = ex;
-        this.bounds = MapillaryLayer.getInstance().bounds;
+        this.bounds = layer.bounds;
+        this.layer = layer;
+        this.manager = manager;
     }
 
     public void run() {
@@ -51,8 +55,6 @@ public class MapillarySequenceDownloadThread implements Runnable {
             if (!jsonall.getBoolean("more") && !ex.isShutdown())
                 ex.shutdown();
             JsonArray jsonseq = jsonall.getJsonArray("ss");
-            // At the moment there is a bug with some sequences at Mapillay API,
-            // so if they are wrong he use this variable to skip them.
             boolean isSequenceWrong = false;
             for (int i = 0; i < jsonseq.size(); i++) {
                 JsonObject jsonobj = jsonseq.getJsonObject(i);
@@ -78,8 +80,6 @@ public class MapillarySequenceDownloadThread implements Runnable {
                         jsonobj.getString("key"), jsonobj.getJsonNumber(
                                 "captured_at").longValue());
 
-               
-
                 List<MapillaryImage> finalImages = new ArrayList<>(images);
                 // Here it gets only those images which are in the downloaded
                 // area.
@@ -87,12 +87,20 @@ public class MapillarySequenceDownloadThread implements Runnable {
                     if (!isInside(img))
                         finalImages.remove(img);
                 }
-                
+
+                boolean imagesAdded = false;
                 for (MapillaryImage img : finalImages) {
-                    MapillaryData.getInstance().getImages().remove(img);
-                    img.setSequence(sequence);
+                    if (layer.data.getImages().contains(img))
+                        ((MapillaryImage) layer.data.getImages().get(
+                                layer.data.getImages().indexOf(img)))
+                                .setSequence(sequence);
+                    else {
+                        img.setSequence(sequence);
+                        imagesAdded = true;
+                    }
                 }
-                MapillaryData.getInstance().addWithoutUpdate(
+                manager.imagesAdded = imagesAdded;
+                layer.data.addWithoutUpdate(
                         new ArrayList<MapillaryAbstractImage>(finalImages));
                 sequence.add(finalImages);
             }

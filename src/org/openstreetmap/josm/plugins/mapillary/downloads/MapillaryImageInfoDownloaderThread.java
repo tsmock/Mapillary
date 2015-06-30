@@ -14,8 +14,8 @@ import java.util.concurrent.ExecutorService;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.mapillary.MapillaryAbstractImage;
-import org.openstreetmap.josm.plugins.mapillary.MapillaryData;
 import org.openstreetmap.josm.plugins.mapillary.MapillaryImage;
+import org.openstreetmap.josm.plugins.mapillary.MapillaryLayer;
 
 /**
  * This thread downloads one of the images in a given area.
@@ -26,10 +26,13 @@ import org.openstreetmap.josm.plugins.mapillary.MapillaryImage;
 public class MapillaryImageInfoDownloaderThread implements Runnable {
     private final String url;
     private final ExecutorService ex;
+    private final MapillaryLayer layer;
 
-    public MapillaryImageInfoDownloaderThread(ExecutorService ex, String url) {
+    public MapillaryImageInfoDownloaderThread(ExecutorService ex, String url,
+            MapillaryLayer layer) {
         this.ex = ex;
         this.url = url;
+        this.layer = layer;
     }
 
     public void run() {
@@ -44,10 +47,10 @@ public class MapillaryImageInfoDownloaderThread implements Runnable {
             for (int i = 0; i < jsonarr.size(); i++) {
                 data = jsonarr.getJsonObject(i);
                 String key = data.getString("key");
-                for (MapillaryAbstractImage image : MapillaryData.getInstance()
-                        .getImages()) {
+                for (MapillaryAbstractImage image : layer.data.getImages()) {
                     if (image instanceof MapillaryImage) {
-                        if (((MapillaryImage) image).getKey().equals(key)) {
+                        if (((MapillaryImage) image).getKey().equals(key)
+                                && ((MapillaryImage) image).getUser() == null) {
                             ((MapillaryImage) image).setUser(data
                                     .getString("user"));
                             ((MapillaryImage) image).setCapturedAt(data

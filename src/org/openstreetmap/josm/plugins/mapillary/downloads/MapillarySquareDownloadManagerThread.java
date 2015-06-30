@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.plugins.mapillary.MapillaryData;
+import org.openstreetmap.josm.plugins.mapillary.MapillaryLayer;
 import org.openstreetmap.josm.plugins.mapillary.gui.MapillaryFilterDialog;
 import org.openstreetmap.josm.plugins.mapillary.gui.MapillaryToggleDialog;
 
@@ -25,31 +25,37 @@ public class MapillarySquareDownloadManagerThread implements Runnable {
     private final String urlImages;
     private final String urlSequences;
     private final String urlSigns;
+    private final MapillaryLayer layer;
+    public boolean imagesAdded = false;
 
     public MapillarySquareDownloadManagerThread(String urlImages,
-            String urlSequences, String urlSigns) {
+            String urlSequences, String urlSigns, MapillaryLayer layer) {
         this.urlImages = urlImages;
         this.urlSequences = urlSequences;
         this.urlSigns = urlSigns;
+        this.layer = layer;
     }
 
     public void run() {
         Main.map.statusLine.setHelpText("Downloading images from Mapillary");
         try {
             downloadSequences();
-            Main.map.statusLine.setHelpText("Downloading image's information");
-            completeImages();
-            Main.map.statusLine.setHelpText("Downloading signs");
-            downloadSigns();
+            if (imagesAdded) {
+                Main.map.statusLine
+                        .setHelpText("Downloading image's information");
+                completeImages();
+                Main.map.statusLine.setHelpText("Downloading signs");
+                downloadSigns();
+            }
         } catch (InterruptedException e) {
             Main.error(e);
         }
-        if (MapillaryData.getInstance().getImages().size() > 0)
+        if (layer.data.getImages().size() > 0)
             Main.map.statusLine.setHelpText(tr("Total images: ")
-                    + MapillaryData.getInstance().getImages().size());
+                    + layer.data.getImages().size());
         else
             Main.map.statusLine.setHelpText(tr("No images found"));
-        MapillaryData.getInstance().dataUpdated();
+        layer.data.dataUpdated();
         MapillaryFilterDialog.getInstance().refresh();
         MapillaryToggleDialog.getInstance().updateImage();
     }
@@ -60,13 +66,13 @@ public class MapillarySquareDownloadManagerThread implements Runnable {
         int page = 0;
         while (!ex.isShutdown()) {
             ex.execute(new MapillarySequenceDownloadThread(ex, urlSequences
-                    + "&page=" + page + "&limit=1"));
+                    + "&page=" + page + "&limit=1", layer, this));
             while (ex.getQueue().remainingCapacity() == 0)
                 Thread.sleep(100);
             page++;
         }
         ex.awaitTermination(15, TimeUnit.SECONDS);
-        MapillaryData.getInstance().dataUpdated();
+        layer.data.dataUpdated();
     }
 
     private void completeImages() throws InterruptedException {
@@ -75,7 +81,7 @@ public class MapillarySquareDownloadManagerThread implements Runnable {
         int page = 0;
         while (!ex.isShutdown()) {
             ex.execute(new MapillaryImageInfoDownloaderThread(ex, urlImages
-                    + "&page=" + page + "&limit=20"));
+                    + "&page=" + page + "&limit=20", layer));
             while (ex.getQueue().remainingCapacity() == 0)
                 Thread.sleep(100);
             page++;
@@ -89,7 +95,7 @@ public class MapillarySquareDownloadManagerThread implements Runnable {
         int page = 0;
         while (!ex.isShutdown()) {
             ex.execute(new MapillarySignDownloaderThread(ex, urlSigns
-                    + "&page=" + page + "&limit=20"));
+                    + "&page=" + page + "&limit=20", layer));
             while (ex.getQueue().remainingCapacity() == 0)
                 Thread.sleep(100);
             page++;

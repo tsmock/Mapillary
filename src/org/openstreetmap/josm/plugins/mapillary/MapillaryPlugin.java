@@ -104,11 +104,18 @@ public class MapillaryPlugin extends Plugin implements EditLayerChangeListener {
             Main.map.addToggleDialog(MapillaryHistoryDialog.getInstance(),
                     false);
             Main.map.addToggleDialog(MapillaryFilterDialog.getInstance(), false);
+            setMenuEnabled(DOWNLOAD_MENU, true);
+            if (Main.pref.getBoolean("mapillary.download-manually"))
+                setMenuEnabled(DOWNLOAD_VIEW_MENU, true);
+            setMenuEnabled(IMPORT_MENU, true);
         }
         if (oldFrame != null && newFrame == null) { // map frame destroyed
             MapillaryToggleDialog.destroyInstance();
             MapillaryHistoryDialog.destroyInstance();
             MapillaryFilterDialog.destroyInstance();
+            setMenuEnabled(DOWNLOAD_MENU, false);
+            setMenuEnabled(DOWNLOAD_VIEW_MENU, false);
+            setMenuEnabled(IMPORT_MENU, false);
         }
     }
 
@@ -125,14 +132,7 @@ public class MapillaryPlugin extends Plugin implements EditLayerChangeListener {
     @Override
     public void editLayerChanged(OsmDataLayer oldLayer, OsmDataLayer newLayer) {
         if (oldLayer == null && newLayer != null) {
-            setMenuEnabled(DOWNLOAD_MENU, true);
-            setMenuEnabled(IMPORT_MENU, true);
-            if (Main.pref.getBoolean("mapillary.download-manually"))
-                setMenuEnabled(DOWNLOAD_VIEW_MENU, true);
         } else if (oldLayer != null && newLayer == null) {
-            setMenuEnabled(DOWNLOAD_MENU, false);
-            setMenuEnabled(IMPORT_MENU, false);
-            setMenuEnabled(DOWNLOAD_VIEW_MENU, false);
         }
     }
 }
