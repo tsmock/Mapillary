@@ -98,18 +98,17 @@ public class MapillarySequenceDownloadThread implements Runnable {
                                 finalImages.indexOf(img),
                                 (MapillaryImage) layer.data.getImages().get(
                                         layer.data.getImages().indexOf(img)));
-                    }
-
-                    else {
+                        sequence.add(img);
+                    } else {
                         img.setSequence(sequence);
                         imagesAdded = true;
+                        sequence.add(img);
                     }
                 }
                 manager.imagesAdded = imagesAdded;
                 layer.data
                         .addWithoutUpdate(new ArrayList<MapillaryAbstractImage>(
                                 finalImages));
-                sequence.add(finalImages);
             }
         } catch (IOException e) {
             Main.error("Error reading the url " + url

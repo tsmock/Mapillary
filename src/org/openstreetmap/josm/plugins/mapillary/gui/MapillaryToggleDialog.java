@@ -222,13 +222,15 @@ public class MapillaryToggleDialog extends ToggleDialog implements
                 }
             });
         } else {
-            MapillaryImage mapillaryImage = (MapillaryImage) this.image;
-            String title = tr(BASE_TITLE);
-            if (mapillaryImage.getUser() != null)
-                title += " -- " + mapillaryImage.getUser();
-            if (mapillaryImage.getCapturedAt() != 0)
-                title += " -- " + mapillaryImage.getDate();
-            setTitle(title);
+            if (this.image != null) {
+                MapillaryImage mapillaryImage = (MapillaryImage) this.image;
+                String title = tr(BASE_TITLE);
+                if (mapillaryImage.getUser() != null)
+                    title += " -- " + mapillaryImage.getUser();
+                if (mapillaryImage.getCapturedAt() != 0)
+                    title += " -- " + mapillaryImage.getDate();
+                setTitle(title);
+            }
         }
     }
 
