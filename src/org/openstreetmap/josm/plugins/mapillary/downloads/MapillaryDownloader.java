@@ -6,6 +6,8 @@ import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.plugins.mapillary.MapillaryLayer;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * Class that concentrates all the ways of downloading of the plugin.
@@ -17,6 +19,7 @@ public class MapillaryDownloader {
 
     public final static String BASE_URL = "https://a.mapillary.com/v2/";
     public final static String CLIENT_ID = "NzNRM2otQkR2SHJzaXJmNmdQWVQ0dzo1YTA2NmNlODhlNWMwOTBm";
+    public final static Executor EXECUTOR = Executors.newSingleThreadExecutor();
 
     private String[] parameters = { "lat", "lon", "distance", "limit",
             "min_lat", "min_lon", "max_lat", "max_lon" };
@@ -51,8 +54,8 @@ public class MapillaryDownloader {
 
         try {
             Main.info("GET " + url2 + " (Mapillary plugin)");
-            Main.worker.submit(new MapillarySquareDownloadManagerThread(url1,
-                    url2, url3, MapillaryLayer.getInstance()));
+            EXECUTOR.execute(new MapillarySquareDownloadManagerThread(url1, url2,
+                    url3, MapillaryLayer.getInstance()));
         } catch (Exception e) {
             Main.error(e);
         }
