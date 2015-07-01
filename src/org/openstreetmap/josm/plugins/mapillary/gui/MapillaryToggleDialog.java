@@ -69,7 +69,8 @@ public class MapillaryToggleDialog extends ToggleDialog implements
         super(tr(BASE_TITLE), "mapillary.png", tr("Open Mapillary window"),
                 Shortcut.registerShortcut(tr("Mapillary dialog"),
                         tr("Open Mapillary main dialog"), KeyEvent.VK_M,
-                        Shortcut.NONE), 200, false, MapillaryPreferenceSetting.class);
+                        Shortcut.NONE), 200, false,
+                MapillaryPreferenceSetting.class);
         MapillaryData.getInstance().addListener(this);
         addShortcuts();
         mapillaryImageDisplay = new MapillaryImageDisplay();
@@ -85,7 +86,7 @@ public class MapillaryToggleDialog extends ToggleDialog implements
         disableAllButtons();
 
     }
-    
+
     /**
      * Adds the shortcuts to the buttons.
      */
@@ -95,7 +96,8 @@ public class MapillaryToggleDialog extends ToggleDialog implements
         nextButton.getActionMap().put("next", new nextPictureAction());
         previousButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
                 KeyStroke.getKeyStroke("PAGE_UP"), "previous");
-        previousButton.getActionMap().put("previous", new previousPictureAction());
+        previousButton.getActionMap().put("previous",
+                new previousPictureAction());
         blueButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
                 KeyStroke.getKeyStroke("control PAGE_UP"), "blue");
         blueButton.getActionMap().put("blue", new blueAction());
@@ -139,12 +141,7 @@ public class MapillaryToggleDialog extends ToggleDialog implements
             if (image instanceof MapillaryImage) {
                 mapillaryImageDisplay.hyperlink.setVisible(true);
                 MapillaryImage mapillaryImage = (MapillaryImage) this.image;
-                String title = tr(BASE_TITLE);
-                if (mapillaryImage.getUser() != null)
-                    title += " -- " + mapillaryImage.getUser();
-                if (mapillaryImage.getCapturedAt() != 0)
-                    title += " -- " + mapillaryImage.getDate();
-                setTitle(title);
+                updateTitle();
                 // Enables/disables next/previous buttons
                 this.nextButton.setEnabled(false);
                 this.previousButton.setEnabled(false);
@@ -214,6 +211,25 @@ public class MapillaryToggleDialog extends ToggleDialog implements
      */
     public synchronized void setImage(MapillaryAbstractImage image) {
         this.image = image;
+    }
+
+    public synchronized void updateTitle() {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    updateTitle();
+                }
+            });
+        } else {
+            MapillaryImage mapillaryImage = (MapillaryImage) this.image;
+            String title = tr(BASE_TITLE);
+            if (mapillaryImage.getUser() != null)
+                title += " -- " + mapillaryImage.getUser();
+            if (mapillaryImage.getCapturedAt() != 0)
+                title += " -- " + mapillaryImage.getDate();
+            setTitle(title);
+        }
     }
 
     /**
