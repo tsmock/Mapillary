@@ -178,8 +178,7 @@ public class MapillaryLayer extends AbstractModifiableLayer implements
      */
     @Override
     public void destroy() {
-        MapillaryToggleDialog.getInstance().mapillaryImageDisplay
-                .setImage(null);
+        MapillaryToggleDialog.getInstance().setImage(null);
         MapillaryToggleDialog.getInstance().updateImage();
         data.getImages().clear();
         MapillaryLayer.INSTANCE = null;
@@ -313,13 +312,13 @@ public class MapillaryLayer extends AbstractModifiableLayer implements
                 Point nextp = null;
                 // Draw sequence line
                 if (image.getSequence() != null) {
-                    MapillaryImage tempImage = image;
-                    while (tempImage.next() != null) {
-                        tempImage = tempImage.next();
+                    MapillaryImage tempImage = image.next();
+                    while (tempImage != null) {
                         if (tempImage.isVisible()) {
                             nextp = mv.getPoint(tempImage.getLatLon());
                             break;
                         }
+                        tempImage = tempImage.next();
                     }
                     if (nextp != null)
                         g.drawLine(p.x, p.y, nextp.x, nextp.y);

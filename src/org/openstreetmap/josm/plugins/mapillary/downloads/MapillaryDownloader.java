@@ -54,8 +54,8 @@ public class MapillaryDownloader {
 
         try {
             Main.info("GET " + url2 + " (Mapillary plugin)");
-            EXECUTOR.execute(new MapillarySquareDownloadManagerThread(url1, url2,
-                    url3, MapillaryLayer.getInstance()));
+            EXECUTOR.execute(new MapillarySquareDownloadManagerThread(url1,
+                    url2, url3, MapillaryLayer.getInstance()));
         } catch (Exception e) {
             Main.error(e);
         }

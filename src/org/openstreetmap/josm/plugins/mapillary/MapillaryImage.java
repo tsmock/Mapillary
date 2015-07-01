@@ -110,9 +110,11 @@ public class MapillaryImage extends MapillaryAbstractImage {
      * @return The following MapillaryImage, or null if there is none.
      */
     public MapillaryImage next() {
-        if (this.getSequence() == null)
-            return null;
-        return this.getSequence().next(this);
+        synchronized (lock) {
+            if (this.getSequence() == null)
+                return null;
+            return this.getSequence().next(this);
+        }
     }
 
     /**
@@ -122,9 +124,11 @@ public class MapillaryImage extends MapillaryAbstractImage {
      * @return The previous MapillaryImage, or null if there is none.
      */
     public MapillaryImage previous() {
-        if (this.getSequence() == null)
-            return null;
-        return this.getSequence().previous(this);
+        synchronized (lock) {
+            if (this.getSequence() == null)
+                return null;
+            return this.getSequence().previous(this);
+        }
     }
 
     @Override
