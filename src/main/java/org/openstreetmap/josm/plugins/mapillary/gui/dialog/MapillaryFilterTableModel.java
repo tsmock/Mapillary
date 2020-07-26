@@ -15,6 +15,7 @@ import org.openstreetmap.josm.data.osm.Filter;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.autofilter.AutoFilterManager;
 import org.openstreetmap.josm.gui.dialogs.FilterTableModel;
+import org.openstreetmap.josm.gui.util.GuiHelper;
 import org.openstreetmap.josm.gui.util.SortableTableModel;
 import org.openstreetmap.josm.plugins.mapillary.data.mapillary.MapillaryFilterModel;
 import org.openstreetmap.josm.tools.Logging;
@@ -101,7 +102,7 @@ public class MapillaryFilterTableModel extends AbstractTableModel implements Sor
    * Runs the filter on a list of primitives that are part of the edit data set, if any.
    *
    * @param force      force execution of filters even if no filter is enabled. Useful to reset state after change of
-   *                     filters
+   *                   filters
    * @param primitives The primitives
    * @since 14206
    */
@@ -175,7 +176,7 @@ public class MapillaryFilterTableModel extends AbstractTableModel implements Sor
       if (rowIndex >= 0 && model.getFiltersCount() > rowIndex && model.removeFilter(rowIndex) != null && !manyChanges) {
         savePrefs();
         updateFilters();
-        fireTableRowsDeleted(rowIndex, rowIndex);
+        GuiHelper.runInEDT(() -> fireTableRowsDeleted(rowIndex, rowIndex));
       }
     }
   }
@@ -214,9 +215,9 @@ public class MapillaryFilterTableModel extends AbstractTableModel implements Sor
   @Override
   public String getColumnName(int column) {
     String[] names = { /* translators notes must be in front */
-        /* column header: enable filter */trc("filter", "E"), /* column header: hide filter */trc("filter", "H"),
-        /* column header: filter text */trc("filter", "Text"), /* column header: inverted filter */trc("filter", "I"),
-        /* column header: filter mode */trc("filter", "M") };
+      /* column header: enable filter */trc("filter", "E"), /* column header: hide filter */trc("filter", "H"),
+      /* column header: filter text */trc("filter", "Text"), /* column header: inverted filter */trc("filter", "I"),
+      /* column header: filter mode */trc("filter", "M") };
     return names[column];
   }
 

@@ -39,13 +39,13 @@ import org.openstreetmap.josm.gui.SideButton;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.gui.util.GuiHelper;
 import org.openstreetmap.josm.gui.widgets.DisableShortcutsOnFocusGainedTextField;
+import org.openstreetmap.josm.plugins.datepicker.IDatePicker;
 import org.openstreetmap.josm.plugins.mapillary.MapillaryAbstractImage;
 import org.openstreetmap.josm.plugins.mapillary.MapillaryDataListener;
 import org.openstreetmap.josm.plugins.mapillary.MapillaryImage;
 import org.openstreetmap.josm.plugins.mapillary.MapillaryImportedImage;
 import org.openstreetmap.josm.plugins.mapillary.data.mapillary.OrganizationRecord;
 import org.openstreetmap.josm.plugins.mapillary.data.mapillary.OrganizationRecord.OrganizationRecordListener;
-import org.openstreetmap.josm.plugins.mapillary.gui.IDatePicker;
 import org.openstreetmap.josm.plugins.mapillary.gui.MapillaryFilterChooseSigns;
 import org.openstreetmap.josm.plugins.mapillary.gui.MapillaryPreferenceSetting;
 import org.openstreetmap.josm.plugins.mapillary.gui.layer.MapillaryLayer;
@@ -108,11 +108,11 @@ public final class MapillaryFilterDialog extends ToggleDialog
       tr("Mapillary filter"),
       "mapillary-filter",
       tr("Open Mapillary filter dialog"),
-      Shortcut.registerShortcut("mapillary:filterdialog", tr("Mapillary images Filter"), KeyEvent.CHAR_UNDEFINED, Shortcut.NONE),
+      Shortcut.registerShortcut("mapillary:filterdialog", tr("Mapillary images Filter"), KeyEvent.CHAR_UNDEFINED,
+        Shortcut.NONE),
       200,
       false,
-      MapillaryPreferenceSetting.class
-    );
+      MapillaryPreferenceSetting.class);
     MapillaryUser.addListener(this);
 
     this.signChooser.setEnabled(false);
@@ -317,47 +317,47 @@ public final class MapillaryFilterDialog extends ToggleDialog
     final OrganizationRecord organization = (OrganizationRecord) organizations.getSelectedItem();
 
     // This predicate returns true if the image should be made invisible
-    Predicate<MapillaryAbstractImage> shouldHide =
-      img -> {
-        if (!layerVisible) {
+    Predicate<MapillaryAbstractImage> shouldHide = img -> {
+      if (!layerVisible) {
+        return true;
+      }
+      if (timeFilter && checkValidTime(img)) {
+        return true;
+      }
+      if (endDateRefresh != null && checkEndDate(img)) {
+        return true;
+      }
+      if (startDateRefresh != null && checkStartDate(img)) {
+        return true;
+      }
+      if (!importedIsSelected && img instanceof MapillaryImportedImage) {
+        return true;
+      }
+      if (onlyPanoIsSelected && !img.isPanorama()) {
+        return true;
+      }
+      if (img instanceof MapillaryImage) {
+        if (!downloadedIsSelected) {
           return true;
         }
-        if (timeFilter && checkValidTime(img)) {
+        if (onlySignsIsSelected && (((MapillaryImage) img).getDetections().isEmpty() || !checkSigns((MapillaryImage) img))) {
           return true;
         }
-        if (endDateRefresh != null && checkEndDate(img)) {
+        UserProfile userProfile = ((MapillaryImage) img).getUser();
+        if (!"".equals(user.getText()) && (userProfile == null || !user.getText().equals(userProfile.getUsername()))) {
           return true;
         }
-        if (startDateRefresh != null && checkStartDate(img)) {
+        if (!OrganizationRecord.NULL_RECORD.equals(organization)
+          && !((MapillaryImage) img).getSequence().getOrganization().getKey().equals(organization.getKey())) {
           return true;
         }
-        if (!importedIsSelected && img instanceof MapillaryImportedImage) {
-          return true;
-        }
-        if (onlyPanoIsSelected && !img.isPanorama()) {
-          return true;
-        }
-        if (img instanceof MapillaryImage) {
-          if (!downloadedIsSelected) {
-            return true;
-          }
-          if (onlySignsIsSelected && (((MapillaryImage) img).getDetections().isEmpty() || !checkSigns((MapillaryImage) img))) {
-            return true;
-          }
-          UserProfile userProfile = ((MapillaryImage) img).getUser();
-          if (!"".equals(user.getText()) && (userProfile == null || !user.getText().equals(userProfile.getUsername()))) {
-            return true;
-          }
-          if (!OrganizationRecord.NULL_RECORD.equals(organization)
-            && !((MapillaryImage) img).getSequence().getOrganization().getKey().equals(organization.getKey())) {
-            return true;
-          }
-        }
-        return false;
-      };
+      }
+      return false;
+    };
 
     if (MapillaryLayer.hasInstance()) {
-      MapillaryLayer.getInstance().getData().getImages().parallelStream().forEach(img -> img.setVisible(!shouldHide.test(img)));
+      MapillaryLayer.getInstance().getData().getImages().parallelStream()
+        .forEach(img -> img.setVisible(!shouldHide.test(img)));
     }
 
     MapillaryLayer.invalidateInstance();
@@ -398,14 +398,15 @@ public final class MapillaryFilterDialog extends ToggleDialog
    * Checks if the image fulfills the sign conditions.
    *
    * @param img The {@link MapillaryAbstractImage} object that is going to be
-   * checked.
+   *            checked.
    *
    * @return {@code true} if it fulfills the conditions; {@code false}
-   * otherwise.
+   *         otherwise.
    */
   private static boolean checkSigns(MapillaryImage img) {
     for (int i = 0; i < MapillaryFilterChooseSigns.SIGN_TAGS.length; i++) {
-      if (checkSign(img, MapillaryFilterChooseSigns.getInstance().signCheckboxes[i], MapillaryFilterChooseSigns.SIGN_TAGS[i]))
+      if (checkSign(img, MapillaryFilterChooseSigns.getInstance().signCheckboxes[i],
+        MapillaryFilterChooseSigns.SIGN_TAGS[i]))
         return true;
     }
     return false;
@@ -508,8 +509,7 @@ public final class MapillaryFilterDialog extends ToggleDialog
       final JOptionPane pane = new JOptionPane(
         MapillaryFilterChooseSigns.getInstance(),
         JOptionPane.PLAIN_MESSAGE,
-        JOptionPane.OK_CANCEL_OPTION
-      );
+        JOptionPane.OK_CANCEL_OPTION);
       JDialog dlg = pane.createDialog(MainApplication.getMainFrame(), tr("Choose signs"));
       dlg.setVisible(true);
       Object value = pane.getValue();
